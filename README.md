@@ -6,16 +6,16 @@ Objective is to provide an easy to install and run control system for any CNC.  
 
 ##Installation
 Run setup script (it also sets up serial port for Arduino):
-'''
+```
 ./primacron
-'''
+```
 <br />
 Upload Arduino Program via Arduino IDE
 <br />
 Launch Workstation Program:
-'''
+```
 ./launch
-'''
+```
 <br />
 
 
