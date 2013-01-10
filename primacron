@@ -1,0 +1,42 @@
+#!/bin/bash
+#Process port and launch program
+
+echo "Choose Input"
+echo "1) Provide port"
+echo "2) Auto-detect port"
+echo "3) Just compile"
+
+read option
+
+if [ $option == "1" ]
+then
+  echo -n "Port: "
+  read ftty
+elif [ $option == "2" ]
+then
+ ls -1 /dev/tty* > before.tty.list
+
+ if [ -z "$PS1" ]; then
+  read -s -n1 -t 10 -p "Connect cable, press Enter: " keypress
+  echo
+ else
+  sleep 10
+ fi
+
+ ls -1 /dev/tty* > after.tty.list
+
+ ftty=$(comm -3 before.tty.list after.tty.list)
+ rm before.tty.list after.tty.list
+fi
+
+echo
+echo
+
+if [ $option != "3" ]; then
+  sudo mv $ftty /dev/ttyUSB0 
+fi
+
+gcc -Wall workstation/serial.c workstation/main.c -o launch
+chmod +x launch
+
+echo "Launch Successful"
