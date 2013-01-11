@@ -11,7 +11,7 @@ Run setup script (it also sets up serial port for Arduino):
 ```
 <br />
 Upload Arduino Program via Arduino IDE
-<br />
+<br /><br />
 Launch Workstation Program:
 ```
 ./launch
