@@ -12,9 +12,9 @@ Run setup script (it also sets up serial port for Arduino):
 <br />
 Upload Arduino Program via Arduino IDE
 <br /><br />
-Launch Workstation Program:
+Launch Workstation Software:
 ```
-./launch
+./launch [gcode file]
 ```
 <br />
 
