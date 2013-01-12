@@ -36,7 +36,7 @@ if [ $option != "3" ]; then
   sudo mv $ftty /dev/ttyUSB0 
 fi
 
-gcc -Wall workstation/serial.c workstation/main.c -o launch
+gcc -Wall software/setup.c software/settings.c software/numbers.c software/gcode.c software/serial.c software/main.c -o launch -lm
 chmod +x launch
 
 echo "Launch Successful"

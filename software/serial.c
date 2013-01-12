@@ -65,7 +65,7 @@ int serial_open(){
   port.fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
 
   if (port.fd == -1){
-    printf("Error: Could not open ttyUSB0 port\n");
+    printf("Error: Could not open ttyACM0 port\n");
   }
   else{
     printf("Serial port opened successfully\n");
@@ -79,7 +79,7 @@ void serial_write(unsigned char data){
   int n = write(port.fd, &data, sizeof(data));
   
   if (n < 0){
-    printf("Error: Write() failure\n");
+    //printf("Error: Write() failure\n");
   }
   else{
     //printf("Wrote: %c\n",data);
