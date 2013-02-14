@@ -142,7 +142,13 @@ unsigned char gc_parse_line(char *line, int size){
               gc.feed_rate = value;
               gc.speed = feed_to_speed(&gc.feed_rate);
               break;
-        }break;
+        }
+          if(gc.feed_rate > settings.max_feed_rate){
+            gc.feed_rate = settings.max_feed_rate;
+            gc.speed = settings.max_speed;
+          }
+        
+        break;
       //Axis values, read as floats
       //Input based on unit_code, covert all to millimeters
       case 'X': //X axes target

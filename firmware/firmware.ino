@@ -9,9 +9,9 @@ char value[100];
 uint8_t state;
 bool dec=0; //Assume no decimal part
 
-#define NO_ACTION 0
-#define INITIALIZE 1
-#define EXECUTE 2
+#define NO_ACTION '$'
+#define INITIALIZE '%'
+#define EXECUTE '^'
 
 //Buffer variables
 Buffer buffer;
@@ -23,7 +23,7 @@ AccelStepper axes[3];
 
 void setup(){
   Serial.begin(9600);
-  state = INITIALIZE;
+  state = NO_ACTION;
 }
 
 void loop(){
@@ -31,18 +31,28 @@ void loop(){
   
   if(Serial.available()){
     input = (char)Serial.read();
+    Serial.println("Input: " + input);
+  
+    if(input == INITIALIZE){
+      state = INITIALIZE;
+      Serial.println("State: INITIALIZE");
+    }
     
     switch(state){
-      case NO_ACTION: break;
+      case NO_ACTION: Serial.println("State: NO_ACTION"); break;
       case INITIALIZE: //First line of data.txt
           switch(input){
             case ' ': 
                 if(dec == 1) frac_part();
                 else whole_part();
+                buffer.push((float)a);
+                a=0;
                 break; //Advance to next input
             case '\n': 
                 if(dec == 1) frac_part();
                 else whole_part();
+                buffer.push((float)a);
+                a=0;
                 machine_setup(); break;
             case '.': dec = 1; whole_part(); break;
             case '0': case '1': case '2': case '3': case '4': case '5':
@@ -51,10 +61,19 @@ void loop(){
           }break;
        case EXECUTE: 
           switch(input){
-            case ' ': frac_part(); break; //Advance to next input
-            case '\n': frac_part();
+            case ' ': 
+                if(dec == 1) frac_part();
+                else whole_part();
+                buffer.push((float)a);
+                a=0; 
+                break; //Advance to next input
+            case '\n': 
+                if(dec == 1) frac_part();
+                else whole_part();
+                buffer.push((float)a);
+                a=0;
                 exec(); break;
-            case '.': whole_part(); break;
+            case '.': dec = 1; whole_part(); break;
             case '0': case '1': case '2': case '3': case '4': case '5':
             case '6': case '7': case '8': case '9':
                   value[j] = input - '0'; j++; break;
@@ -63,6 +82,7 @@ void loop(){
   }
 }
 
+//Setups up the machine
 void machine_setup(){
   Serial.println();
   Serial.println("Initiating");
@@ -101,6 +121,8 @@ void machine_setup(){
   state = EXECUTE;
 }
 
+
+//Execute movement wait till done
 void exec(){
   Serial.println();
   Serial.println("Executing");
@@ -128,6 +150,7 @@ void exec(){
   wait();
 }
 
+//Cause wait till completes moving
 int wait(){
   Serial.println();
   Serial.println("Waiting for motion complete...");
@@ -153,6 +176,9 @@ int wait(){
   }
 }
 
+
+//Number handling
+//Compute float number to store to buffer
 void whole_part(){
   int temp = j-1;
   a = 0;
@@ -170,8 +196,4 @@ void frac_part(){
     value[k]=0;
   }
   j=0;
-
-  buffer.push((float)a);
-  Serial.print("Pushed: ");
-  Serial.println(a);
 }

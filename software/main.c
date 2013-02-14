@@ -17,11 +17,12 @@
 #include "serial.h"
 #include "settings.h"
 #include "setup.h"
+#include "state.h"
 
 
 int main(int argc, char *argv[]){
   //Initialize system
-  serial_open(); // /dev/ttyUSB0 port set
+  serial_open(); // /dev/ttyACM0 port set
   serial_init();
 
   //Setup command
@@ -40,7 +41,7 @@ int main(int argc, char *argv[]){
 
   if(input == NULL) printf("Error: File not opened\n");
   else{
-    printf("%s opened\n\n", argv[1]);
+    printf("%s opened\n", argv[1]);
 
     while(!feof(input)){
       input_char[0] = getc(input);
@@ -56,27 +57,33 @@ int main(int argc, char *argv[]){
         input_size = 0;
       }
     }
-  }
+  
+    fclose(input);
+    printf("%s closed\n\n", argv[1]);
+    free(input_line);
+    printf("Status: data.txt completed writing\n");
 
-  free(input_line);
+    //data.txt now written
+    //Send over serial
+    FILE *fp;
+    fp = fopen("data.txt", "r+");
+    state = NO_ACTION;
 
-  //data.txt now written
-  //Send over serial
-  FILE *fp; //File pointer
-  char output;
+    if(fp == NULL) printf("Error: Data.txt failed to open\n");
 
-  fp = fopen("data.txt", "r+");
+    serial_write(INITIALIZE); //Signal arduino to start
+    printf("Status: %c\n", state);
+    get_state();
+    printf("Status: %c\n", state);
 
-  if(fp == NULL) printf("Error: File not opened\n");
-  else {
+    while(fp != NULL){
+      get_state();
 
-    while(!feof(fp)) {
-      output = getc(fp);
-      serial_write(output);
+      if(state != NO_ACTION) write_line(fp);
     }
 
-    fclose(fp);
-  }
+    printf("File Closed\n");
 
+  }
   return 0;
 }

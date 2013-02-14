@@ -18,7 +18,7 @@ int serial_open();
 
 void serial_write(unsigned char data);
 
-unsigned char serial_read();
+char serial_read();
 
 void serial_close();
 

@@ -86,8 +86,14 @@ void serial_write(unsigned char data){
   }
 }
 
-unsigned char serial_read(){
-  return fcntl(port.fd, F_SETFL, 0); //Non blocking read
+char serial_read(){
+  char buffer;
+  int n = read(port.fd, &buffer, sizeof(buffer));
+
+  if (n < 0)
+    printf("read failed!\n");
+
+  return buffer;
 }
 
 void serial_close(){
